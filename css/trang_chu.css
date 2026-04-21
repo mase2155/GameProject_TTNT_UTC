@@ -8,7 +8,7 @@
 }
 
 .container .main_title {
-    padding-top: 200px;
+    padding-top: 150px;
 }
 
 .container .main_title h2 {
@@ -33,19 +33,18 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 25px;
+    list-style: none;
 }
-
-.container .choice button {
+.container .choice a{
+    padding: 8px 16px;
+    background: #6b21a8;
     width: 300px;
-    border: 2px solid #6b21a8;
-    border-radius: 12px;
-    background-color: #6b21a8;
-}
-.container .choice button:hover{
-    background-color: #bd945f;
-}
-.container .choice button>a {
+    text-align: center;
     text-decoration: none;
     color: whitesmoke;
+    border: 2px solid #6b21a8;
+    border-radius: 12px;
+}
+.container .choice a:hover {
+    background-color: #bd945f;
 }
