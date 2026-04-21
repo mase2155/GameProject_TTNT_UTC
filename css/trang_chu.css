@@ -1,41 +1,53 @@
 #content {
-    background: radial-gradient(circle, #0D1117 0%, #05070A 100%);
-    height: 755px;
-}
-
-#container {
+    position: relative; 
     width: 100%;
+    height: 900px; 
+    overflow: hidden;
 }
-
-.container .main_title {
-    padding-top: 150px;
+#content .banner img {
+    width: 100%;
+    height: 900px;
+    position: relative;
+    background-size: cover;
 }
-
-.container .main_title h2 {
+#content .overlay {
+    position: absolute;
+    inset: 0 0  0; 
+    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.9));
+}
+#content .option {
+    position: absolute;
+    top: 50%;         
+    left: 50%;        
+    transform: translate(-50%, -55%); 
+    z-index: 10;      
+    width: 100%;      
+}
+#content .option .main_title h2{
     text-transform: uppercase;
     font-weight: bold;
-    color: #bd945f;
+    color: whitesmoke;
     text-align: center;
-    font-size: 70px;
+    font-size: 100px;
 }
-
-.container .main_title p {
-    color: white;
+#content .option .main_title h3{
     text-transform: uppercase;
     font-weight: bold;
     text-align: center;
     font-size: 25px;
-    padding-bottom: 30px;
+    padding-bottom: 20px;
+    color: whitesmoke;
 }
 
-.container .choice {
+#content .option .choice {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     list-style: none;
 }
-.container .choice a{
+
+#content .option .choice a{
     padding: 8px 16px;
     background: #6b21a8;
     width: 300px;
@@ -45,6 +57,16 @@
     border: 2px solid #6b21a8;
     border-radius: 12px;
 }
-.container .choice a:hover {
+#content .option .choice a:hover {
     background-color: #bd945f;
+}
+
+#cre  {
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #bd945f;
+    padding-top: 10px;
+    height: 48px;
+    color: whitesmoke;
 }
