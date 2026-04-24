@@ -1,0 +1,174 @@
+#content {
+    position: relative;
+    width: 100%;
+    height: 900px;
+    overflow: hidden;
+}
+
+#content .banner img {
+    width: 100%;
+    height: 900px;
+    position: relative;
+    background-size: cover;
+}
+
+#content .overlay {
+    position: absolute;
+    inset: 0 0 0;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.472));
+}
+.nofi_table {
+    background-color: #2c2e53;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    width: 400px;
+    height: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 15;
+    position: absolute;
+    top: 50%;
+    left: 20.5%;
+    transform: translate(-50%, -50%);
+    overflow: hidden; 
+    box-sizing: border-box;
+    text-align: center;
+    padding-left: 30px;
+}
+.nofi_table h3 {
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    padding-top: 10px;
+    color: whitesmoke;
+}
+.nofi_table h4 {
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: left;
+    color: whitesmoke;
+    width: 350px;
+    align-items: center;
+    background-color: #bd945f;
+    padding-left: 20px;
+}
+.nofi_table p{
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    padding-top: 15px;
+    color: whitesmoke;
+}
+.play_table {
+    background-color: #2c2e53;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    width: 700px;
+    height: 820px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 15;
+    position: absolute;
+    top: 50%;
+    left: 53%;
+    transform: translate(-50%, -50%);
+    overflow: hidden; 
+    box-sizing: border-box;
+}
+
+.play_table .row {
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 1;
+    display: flex;
+    width: 100%;
+}
+
+.play_table .cel {
+    padding: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    flex: 1;
+}
+
+.play_table .cel:last-child {
+    border-right: none;
+}
+
+.play_table .row:last-child .cel {
+    border-bottom: none;
+}
+.play_table .row .cel p{
+    font-size: 34px;
+    text-align: center;
+}
+.option_table {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2c2e53;
+    display: flex;
+    flex-direction: column;
+    margin-left: 610px;
+    width: 300px;
+    gap: 20px;
+    align-items: center;
+    padding-bottom: 30px;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+}
+.option_table button {
+    background-color: #bd945f;
+    width: 180px;
+    height: 40px;
+    color: whitesmoke;
+    text-transform: uppercase;
+    font-weight: bold;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+}
+
+.option_table h3 {
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    padding-top: 30px;
+    color: whitesmoke;
+}
+.option_table h4 {
+    padding: 10px 50px 10px 50px;
+    background-color: #bd945f;
+    text-transform: uppercase;
+    color: whitesmoke;
+    font-weight: bold;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+}
+.details {
+    padding: 5px 30px 10px 30px;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+}
+.details h3{
+    padding-top: 15px;
+    padding-bottom: 10px;
+}
+.details p{
+    font-size: 20px;
+    text-transform: uppercase;
+    color: whitesmoke;
+}
+#cre {
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #bd945f;
+    padding-top: 10px;
+    height: 48px;
+    color: whitesmoke;
+}
