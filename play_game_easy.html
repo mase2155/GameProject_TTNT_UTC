@@ -25,9 +25,12 @@
             <div class="container">
                 <div class="main-content">
                     <div class="nofi_table">
-                        <h3>Trạng Thái</h3> <br>
-                        <h4>Số bước đã đi</h4> <br>
-                        <h4>Số bước còn lại</h4> <br>
+                        <h3>Trạng Thái: <span id="statusText">Đang
+                                chơi</span></h3> <br>
+                        <h4>Số bước đã đi: <span id="stepsDone">0</span></h4>
+                        <br>
+                        <h4>Số bước còn lại: <span id="stepsLeft">18</span></h4>
+                        <br>
                         <p>Hãy cố gắng để trở thành người chiến thắng !</p>
                     </div>
                     <div class="play_table">
@@ -141,5 +144,94 @@
         <footer id="cre">
             <p>thực hiện bởi Nhóm 4 | Học phần Trí Tuệ Nhân Tạo </p>
         </footer>
+        <script>
+            // 1. Khởi tạo các biến cơ bản
+let wolfPos = { x: 0, y: 0 }; // Vị trí ban đầu của Sói (hàng 0, cột 0)
+let stepsDone = 0;
+const maxSteps = 18;
+let isGameOver = false;
+
+// Lấy danh sách tất cả các ô (cel) trong bảng 8x8
+// Vì có 8 hàng, mỗi hàng 8 ô nên tổng cộng 64 ô
+const cells = document.querySelectorAll('.cel');
+
+// 2. Hàm cập nhật giao diện (Render)
+function updateBoard() {
+    // Cập nhật con số hiển thị
+    document.getElementById('stepsDone').innerText = stepsDone;
+    document.getElementById('stepsLeft').innerText = maxSteps - stepsDone;
+
+    // Duyệt qua toàn bộ ô để kiểm tra thắng/thua
+    cells.forEach((cell, index) => {
+        // Tính toán tọa độ x, y từ index (giống mảng 2 chiều trong C++)
+        let r = Math.floor(index / 8); 
+        let c = index % 8;
+
+        const pTag = cell.querySelector('p');
+        
+        // Nếu là vị trí của sói, vẽ sói vào
+        if (r === wolfPos.y && c === wolfPos.x) {
+            // Kiểm tra nếu ô đó có cừu
+            if (pTag.innerText === '🐑') {
+                alert("Chúc mừng! Bạn đã chiến thắng!");
+                isGameOver = true;
+            }
+            pTag.innerText = '🐺';
+        } 
+        // Nếu không phải vị trí sói và đang chứa sói cũ thì xóa đi
+        else if (pTag.innerText === '🐺') {
+            pTag.innerText = '';
+        }
+    });
+
+    // Kiểm tra hết bước
+    if (stepsDone >= maxSteps && !isGameOver) {
+        document.getElementById('statusText').innerText = "Thua cuộc!";
+        alert("Bạn đã hết lượt di chuyển! Game Over.");
+        isGameOver = true;
+    }
+}
+
+// 3. Hàm xử lý di chuyển
+function moveWolf(dx, dy) {
+    if (isGameOver) return;
+
+    let nextX = wolfPos.x + dx;
+    let nextY = wolfPos.y + dy;
+
+    // Kiểm tra va chạm biên (Wall) - Giống kiểm tra mảng trong C++
+    if (nextX < 0 || nextX >= 8 || nextY < 0 || nextY >= 8) return;
+
+    // Kiểm tra vật cản (Cây 🌲)
+    let nextIndex = nextY * 8 + nextX;
+    let nextCellContent = cells[nextIndex].querySelector('p').innerText;
+    if (nextCellContent === '🌲') return;
+
+    // Nếu hợp lệ thì cập nhật vị trí
+    wolfPos.x = nextX;
+    wolfPos.y = nextY;
+    stepsDone++;
+    
+    updateBoard();
+}
+
+// 4. Lắng nghe sự kiện bàn phím
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowUp')    moveWolf(0, -1);
+    if (event.key === 'ArrowDown')  moveWolf(0, 1);
+    if (event.key === 'ArrowLeft')  moveWolf(-1, 0);
+    if (event.key === 'ArrowRight') moveWolf(1, 0);
+});
+
+// 5. Nút Reset
+document.getElementById('resetBtn').onclick = () => {
+    location.reload(); // Cách đơn giản nhất để chơi lại từ đầu
+};
+
+// Nút Thoát
+document.getElementById('backHomeBtn').onclick = () => {
+    window.location.href = "index.html"; 
+};
+        </script>
     </body>
 </html>

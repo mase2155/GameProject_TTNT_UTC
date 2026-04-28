@@ -26,9 +26,12 @@
                 <div class="main-content">
                     <div class="nofi_table">
                         <h3>Trạng Thái</h3> <br>
-                        <h4>Số bước đã đi</h4> <br>
-                        <h4>Số bước còn lại</h4> <br>
-                        <p>Hãy cố gắng để trở thành người chiến thắng !</p>
+                        <h4>Số bước đã đi: <span id="steps-taken">0</span></h4>
+                        <br>
+                        <h4>Số bước còn lại: <span
+                                id="steps-left">25</span></h4> <br>
+                        <p id="message">Hãy cố gắng để trở thành người chiến
+                            thắng !</p>
                     </div>
                     <div class="play_table">
                         <div class="row number1">
@@ -517,5 +520,129 @@
         <footer id="cre">
             <p>thực hiện bởi Nhóm 4 | Học phần Trí Tuệ Nhân Tạo </p>
         </footer>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+    // 1. Khởi tạo cấu hình
+    const MAX_STEPS = 25;
+    const LOSE_THRESHOLD = 18; // Theo yêu cầu: quá 18 bước không tìm thấy cừu là thua? 
+    // Lưu ý: Bạn yêu cầu giới hạn 25 bước nhưng lại ghi "quá 18 bước không tìm được là thua". 
+    // Mình sẽ ưu tiên logic: Nếu còn 0 bước (tức là đi hết 25 bước) hoặc vượt quá mốc bạn quy định sẽ thua.
+
+    let stepsTaken = 0;
+    let stepsLeft = MAX_STEPS;
+    let isGameOver = false;
+
+    // Lấy tọa độ sói (🐺) và cừu (🐑) từ DOM
+    const cells = document.querySelectorAll(".cel");
+    const rows = document.querySelectorAll(".play_table .row");
+    const gridHeight = rows.length;
+    const gridWidth = 12; // Dựa trên col-1 (12 cột của Bootstrap)
+
+    const stepsTakenDisplay = document.getElementById("steps-taken");
+    const stepsLeftDisplay = document.getElementById("steps-left");
+    const messageDisplay = document.getElementById("message");
+
+    // Hàm lấy tọa độ hiện tại của Wolf
+    function getWolfPosition() {
+        const allCells = document.querySelectorAll(".cel");
+        for (let i = 0; i < allCells.length; i++) {
+            if (allCells[i].innerText.includes("🐺")) return i;
+        }
+        return 0;
+    }
+
+    // Hàm xử lý di chuyển
+    function moveWolf(direction) {
+        if (isGameOver) return;
+
+        const currentIndex = getWolfPosition();
+        let nextIndex = currentIndex;
+
+        if (direction === "ArrowUp") nextIndex -= gridWidth;
+        if (direction === "ArrowDown") nextIndex += gridWidth;
+        if (direction === "ArrowLeft") nextIndex -= 1;
+        if (direction === "ArrowRight") nextIndex += 1;
+
+        // Kiểm tra chặn tường (biên trái/phải của hàng)
+        const currentRow = Math.floor(currentIndex / gridWidth);
+        const nextRow = Math.floor(nextIndex / gridWidth);
+
+        if (direction === "ArrowLeft" || direction === "ArrowRight") {
+            if (currentRow !== nextRow) return; // Không cho nhảy hàng
+        }
+
+        // Kiểm tra biên trên/dưới và vật cản
+        const targetCell = cells[nextIndex];
+        if (!targetCell || targetCell.innerText.includes("🌲")) {
+            return; // Gặp cây hoặc tường thì đứng yên
+        }
+
+        // Thực hiện di chuyển
+        const wolfEmoji = "🐺";
+        cells[currentIndex].innerHTML = "<p></p>";
+        
+        // Kiểm tra nếu ăn được cừu
+        if (targetCell.innerText.includes("🐑")) {
+            targetCell.innerHTML = `<p>${wolfEmoji}</p>`;
+            endGame(true);
+            updateScore();
+            return;
+        }
+
+        targetCell.innerHTML = `<p>${wolfEmoji}</p>`;
+        
+        // Cập nhật bước đi
+        stepsTaken++;
+        stepsLeft--;
+        updateScore();
+        checkLoseCondition();
+    }
+
+    function updateScore() {
+        if (stepsTakenDisplay) stepsTakenDisplay.innerText = stepsTaken;
+        if (stepsLeftDisplay) stepsLeftDisplay.innerText = stepsLeft;
+    }
+
+    function checkLoseCondition() {
+        // Theo yêu cầu của bạn: Nếu đi quá 25 bước mà chưa tới đích
+        if (stepsTaken > 25) {
+            endGame(false);
+        }
+    }
+
+    function endGame(isWin) {
+        isGameOver = true;
+        if (isWin) {
+            messageDisplay.innerText = "CHÚC MỪNG! Bạn đã tìm thấy cừu! 🎉";
+            messageDisplay.style.color = "green";
+            alert("Bạn đã chiến thắng!");
+        } else {
+            messageDisplay.innerText = "GAME OVER! Bạn không tìm thấy cừu kịp lúc. 💀";
+            messageDisplay.style.color = "red";
+            alert("Bạn đã thua cuộc!");
+        }
+    }
+
+    // Sự kiện bàn phím
+    window.addEventListener("keydown", (e) => {
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+            e.preventDefault();
+            moveWolf(e.key);
+        }
+    });
+
+    // Nút Reset
+    document.getElementById("resetBtn").addEventListener("click", () => {
+        location.reload();
+    });
+
+    // Nút Thoát
+    document.getElementById("backHomeBtn").addEventListener("click", () => {
+        if(confirm("Bạn có muốn thoát không?")) {
+            window.close();
+        }
+    });
+});
+        </script>
     </body>
 </html>
