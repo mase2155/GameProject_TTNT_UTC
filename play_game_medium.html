@@ -521,7 +521,7 @@
             <p>thực hiện bởi Nhóm 4 | Học phần Trí Tuệ Nhân Tạo </p>
         </footer>
         <script>
-            // 1. Khởi tạo các biến cơ bản
+            
 let wolfPos = { x: 0, y: 0 }; 
 let stepsDone = 0;
 const maxSteps = 25; 
@@ -529,17 +529,18 @@ let isGameOver = false;
 
 const cells = document.querySelectorAll('.cel');
 
-// 2. Hàm cập nhật giao diện (Render)
+
 function updateBoard() {
     document.getElementById('steps-taken').innerText = stepsDone;
     document.getElementById('steps-left').innerText = maxSteps - stepsDone;
 
+    // Chuyển toạ độ x , y thành mảng 1 chiều
     cells.forEach((cell, index) => {
         let r = Math.floor(index / 12); 
         let c = index % 12;
         const pTag = cell.querySelector('p');
         
-        // CHỈNH SỬA: Kiểm tra nếu pTag tồn tại mới xử lý
+        
         if (!pTag) return;
 
         if (r === wolfPos.y && c === wolfPos.x) {
@@ -561,19 +562,20 @@ function updateBoard() {
     }
 }
 
-// 3. Hàm xử lý di chuyển
 function moveWolf(dx, dy) {
     if (isGameOver) return;
 
     let nextX = wolfPos.x + dx;
     let nextY = wolfPos.y + dy;
 
+    // Wall :
     if (nextX < 0 || nextX >= 12 || nextY < 0 || nextY >= 12) return;
 
+    // Vì cells là mảng 1 chiều mà sói đang ở toạ độ x ,y nên cần đổi sang dạng index để lấy đúng địa chỉ ô trong mảng 
     let nextIndex = nextY * 12 + nextX;
     let nextCell = cells[nextIndex];
     
-    // CHỈNH SỬA: Kiểm tra an toàn trước khi lấy innerText
+    // hàm này để kiểm tra vật cản 
     if (nextCell) {
         let nextPTag = nextCell.querySelector('p');
         if (nextPTag && nextPTag.innerText === '🌲') return;
@@ -586,9 +588,8 @@ function moveWolf(dx, dy) {
     updateBoard();
 }
 
-// 4. Lắng nghe sự kiện bàn phím
+
 window.addEventListener('keydown', (event) => {
-    // CHỈNH SỬA: Chặn cuộn trang khi nhấn phím mũi tên
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
         event.preventDefault(); 
     }
@@ -599,12 +600,10 @@ window.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowRight') moveWolf(1, 0);
 });
 
-// 5. Nút Reset
 document.getElementById('resetBtn').onclick = () => {
     location.reload();
 };
 
-// Nút Thoát
 document.getElementById('backHomeBtn').onclick = () => {
     window.location.href = "index.html"; 
 };
