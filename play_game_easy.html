@@ -232,6 +232,98 @@ document.getElementById('resetBtn').onclick = () => {
 document.getElementById('backHomeBtn').onclick = () => {
     window.location.href = "index.html"; 
 };
+// Nút Trợ giúp
+document.getElementById('supportUserBtn').addEventListener('click', function() {
+    const pTags = document.querySelectorAll('.play_table .cel p');
+    const size = 8;
+
+    if (pTags.length !== size * size) {
+        alert("Bàn cờ chưa đầy đủ. Vui lòng kiểm tra lại cấu trúc HTML.");
+        return;
+    }
+
+    const grid = [];
+    let startPos = null;
+    let targetPos = null;
+
+    for (let i = 0; i < pTags.length; i++) {
+        const r = Math.floor(i / size);
+        const c = i % size;
+        if (!grid[r]) grid[r] = [];
+
+        const content = pTags[i].innerText.trim();
+        grid[r][c] = content;
+
+        if (content === '🐺') startPos = { r, c };
+        if (content === '🐑') targetPos = { r, c };
+    }
+
+    if (!startPos || !targetPos) {
+        alert("Không tìm thấy Sói hoặc Cừu trên bàn cờ!");
+        return;
+    }
+
+    const directions = [
+        { dr: 0, dc: 1 },
+        { dr: 1, dc: 0 },
+        { dr: 0, dc: -1 },
+        { dr: -1, dc: 0 }
+    ];
+
+    const visited = Array.from({ length: size }, () => Array(size).fill(false));
+    const prev = Array.from({ length: size }, () => Array(size).fill(null));
+    const queue = [];
+
+    queue.push(startPos);
+    visited[startPos.r][startPos.c] = true;
+
+    while (queue.length > 0) {
+        const current = queue.shift();
+        if (current.r === targetPos.r && current.c === targetPos.c) break;
+
+        for (const { dr, dc } of directions) {
+            const nr = current.r + dr;
+            const nc = current.c + dc;
+            if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+            if (visited[nr][nc]) continue;
+
+            const cell = grid[nr][nc];
+            if (cell === '🌲' || cell === '🪨') continue;
+
+            visited[nr][nc] = true;
+            prev[nr][nc] = current;
+            queue.push({ r: nr, c: nc });
+        }
+    }
+
+    if (!visited[targetPos.r][targetPos.c]) {
+        alert("Không tìm thấy đường đi ngắn nhất tới Cừu.");
+        return;
+    }
+
+    let path = [];
+    let current = targetPos;
+    while (current) {
+        path.push(current);
+        current = prev[current.r][current.c];
+    }
+    path.reverse();
+
+    const cellElements = document.querySelectorAll('.play_table .cel');
+    cellElements.forEach(cell => {
+        if (cell.style.backgroundColor === '#bd945f') {
+            cell.style.backgroundColor = '';
+        }
+    });
+
+    path.forEach(pos => {
+        const index = pos.r * size + pos.c;
+        const cell = cellElements[index];
+        if (cell) {
+            cell.style.backgroundColor = '#bd945f';
+        }
+    });
+});
         </script>
     </body>
 </html>

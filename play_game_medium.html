@@ -521,128 +521,186 @@
             <p>thực hiện bởi Nhóm 4 | Học phần Trí Tuệ Nhân Tạo </p>
         </footer>
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
-    // 1. Khởi tạo cấu hình
-    const MAX_STEPS = 25;
-    const LOSE_THRESHOLD = 18; // Theo yêu cầu: quá 18 bước không tìm thấy cừu là thua? 
-    // Lưu ý: Bạn yêu cầu giới hạn 25 bước nhưng lại ghi "quá 18 bước không tìm được là thua". 
-    // Mình sẽ ưu tiên logic: Nếu còn 0 bước (tức là đi hết 25 bước) hoặc vượt quá mốc bạn quy định sẽ thua.
+            // 1. Khởi tạo các biến cơ bản
+let wolfPos = { x: 0, y: 0 }; 
+let stepsDone = 0;
+const maxSteps = 25; 
+let isGameOver = false;
 
-    let stepsTaken = 0;
-    let stepsLeft = MAX_STEPS;
-    let isGameOver = false;
+const cells = document.querySelectorAll('.cel');
 
-    // Lấy tọa độ sói (🐺) và cừu (🐑) từ DOM
-    const cells = document.querySelectorAll(".cel");
-    const rows = document.querySelectorAll(".play_table .row");
-    const gridHeight = rows.length;
-    const gridWidth = 12; // Dựa trên col-1 (12 cột của Bootstrap)
+// 2. Hàm cập nhật giao diện (Render)
+function updateBoard() {
+    document.getElementById('steps-taken').innerText = stepsDone;
+    document.getElementById('steps-left').innerText = maxSteps - stepsDone;
 
-    const stepsTakenDisplay = document.getElementById("steps-taken");
-    const stepsLeftDisplay = document.getElementById("steps-left");
-    const messageDisplay = document.getElementById("message");
-
-    // Hàm lấy tọa độ hiện tại của Wolf
-    function getWolfPosition() {
-        const allCells = document.querySelectorAll(".cel");
-        for (let i = 0; i < allCells.length; i++) {
-            if (allCells[i].innerText.includes("🐺")) return i;
-        }
-        return 0;
-    }
-
-    // Hàm xử lý di chuyển
-    function moveWolf(direction) {
-        if (isGameOver) return;
-
-        const currentIndex = getWolfPosition();
-        let nextIndex = currentIndex;
-
-        if (direction === "ArrowUp") nextIndex -= gridWidth;
-        if (direction === "ArrowDown") nextIndex += gridWidth;
-        if (direction === "ArrowLeft") nextIndex -= 1;
-        if (direction === "ArrowRight") nextIndex += 1;
-
-        // Kiểm tra chặn tường (biên trái/phải của hàng)
-        const currentRow = Math.floor(currentIndex / gridWidth);
-        const nextRow = Math.floor(nextIndex / gridWidth);
-
-        if (direction === "ArrowLeft" || direction === "ArrowRight") {
-            if (currentRow !== nextRow) return; // Không cho nhảy hàng
-        }
-
-        // Kiểm tra biên trên/dưới và vật cản
-        const targetCell = cells[nextIndex];
-        if (!targetCell || targetCell.innerText.includes("🌲")) {
-            return; // Gặp cây hoặc tường thì đứng yên
-        }
-
-        // Thực hiện di chuyển
-        const wolfEmoji = "🐺";
-        cells[currentIndex].innerHTML = "<p></p>";
+    cells.forEach((cell, index) => {
+        let r = Math.floor(index / 12); 
+        let c = index % 12;
+        const pTag = cell.querySelector('p');
         
-        // Kiểm tra nếu ăn được cừu
-        if (targetCell.innerText.includes("🐑")) {
-            targetCell.innerHTML = `<p>${wolfEmoji}</p>`;
-            endGame(true);
-            updateScore();
-            return;
+        // CHỈNH SỬA: Kiểm tra nếu pTag tồn tại mới xử lý
+        if (!pTag) return;
+
+        if (r === wolfPos.y && c === wolfPos.x) {
+            if (pTag.innerText === '🐑') {
+                alert("Chúc mừng! Bạn đã chiến thắng!");
+                isGameOver = true;
+            }
+            pTag.innerText = '🐺';
+        } 
+        else if (pTag.innerText === '🐺') {
+            pTag.innerText = '';
         }
+    });
 
-        targetCell.innerHTML = `<p>${wolfEmoji}</p>`;
-        
-        // Cập nhật bước đi
-        stepsTaken++;
-        stepsLeft--;
-        updateScore();
-        checkLoseCondition();
-    }
-
-    function updateScore() {
-        if (stepsTakenDisplay) stepsTakenDisplay.innerText = stepsTaken;
-        if (stepsLeftDisplay) stepsLeftDisplay.innerText = stepsLeft;
-    }
-
-    function checkLoseCondition() {
-        // Theo yêu cầu của bạn: Nếu đi quá 25 bước mà chưa tới đích
-        if (stepsTaken > 25) {
-            endGame(false);
-        }
-    }
-
-    function endGame(isWin) {
+    if (stepsDone >= maxSteps && !isGameOver) {
+        document.getElementById('message').innerText = "Thua cuộc!";
+        alert("Bạn đã hết lượt di chuyển! Game Over.");
         isGameOver = true;
-        if (isWin) {
-            messageDisplay.innerText = "CHÚC MỪNG! Bạn đã tìm thấy cừu! 🎉";
-            messageDisplay.style.color = "green";
-            alert("Bạn đã chiến thắng!");
-        } else {
-            messageDisplay.innerText = "GAME OVER! Bạn không tìm thấy cừu kịp lúc. 💀";
-            messageDisplay.style.color = "red";
-            alert("Bạn đã thua cuộc!");
+    }
+}
+
+// 3. Hàm xử lý di chuyển
+function moveWolf(dx, dy) {
+    if (isGameOver) return;
+
+    let nextX = wolfPos.x + dx;
+    let nextY = wolfPos.y + dy;
+
+    if (nextX < 0 || nextX >= 12 || nextY < 0 || nextY >= 12) return;
+
+    let nextIndex = nextY * 12 + nextX;
+    let nextCell = cells[nextIndex];
+    
+    // CHỈNH SỬA: Kiểm tra an toàn trước khi lấy innerText
+    if (nextCell) {
+        let nextPTag = nextCell.querySelector('p');
+        if (nextPTag && nextPTag.innerText === '🌲') return;
+    }
+
+    wolfPos.x = nextX;
+    wolfPos.y = nextY;
+    stepsDone++;
+    
+    updateBoard();
+}
+
+// 4. Lắng nghe sự kiện bàn phím
+window.addEventListener('keydown', (event) => {
+    // CHỈNH SỬA: Chặn cuộn trang khi nhấn phím mũi tên
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+        event.preventDefault(); 
+    }
+
+    if (event.key === 'ArrowUp')    moveWolf(0, -1);
+    if (event.key === 'ArrowDown')  moveWolf(0, 1);
+    if (event.key === 'ArrowLeft')  moveWolf(-1, 0);
+    if (event.key === 'ArrowRight') moveWolf(1, 0);
+});
+
+// 5. Nút Reset
+document.getElementById('resetBtn').onclick = () => {
+    location.reload();
+};
+
+// Nút Thoát
+document.getElementById('backHomeBtn').onclick = () => {
+    window.location.href = "index.html"; 
+};
+// Nút Trợ Giúp :
+document.getElementById('supportUserBtn').addEventListener('click', function() {
+    const pTags = document.querySelectorAll('.play_table .cel p');
+    const size = 12;
+
+    if (pTags.length !== size * size) {
+        alert("Bàn cờ chưa đầy đủ. Vui lòng kiểm tra lại cấu trúc HTML.");
+        return;
+    }
+
+    const grid = [];
+    let startPos = null;
+    let targetPos = null;
+
+    for (let i = 0; i < pTags.length; i++) {
+        const r = Math.floor(i / size);
+        const c = i % size;
+        if (!grid[r]) grid[r] = [];
+
+        const content = pTags[i].innerText.trim();
+        grid[r][c] = content;
+
+        if (content === '🐺') startPos = { r, c };
+        if (content === '🐑') targetPos = { r, c };
+    }
+
+    if (!startPos || !targetPos) {
+        alert("Không tìm thấy Sói hoặc Cừu trên bàn cờ!");
+        return;
+    }
+
+    const directions = [
+        { dr: 0, dc: 1 },
+        { dr: 1, dc: 0 },
+        { dr: 0, dc: -1 },
+        { dr: -1, dc: 0 }
+    ];
+
+    const visited = Array.from({ length: size }, () => Array(size).fill(false));
+    const prev = Array.from({ length: size }, () => Array(size).fill(null));
+    const queue = [];
+
+    queue.push(startPos);
+    visited[startPos.r][startPos.c] = true;
+
+    while (queue.length > 0) {
+        const current = queue.shift();
+        if (current.r === targetPos.r && current.c === targetPos.c) break;
+
+        for (const { dr, dc } of directions) {
+            const nr = current.r + dr;
+            const nc = current.c + dc;
+            if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+            if (visited[nr][nc]) continue;
+
+            const cell = grid[nr][nc];
+            if (cell === '🌲' || cell === '🪨') continue;
+
+            visited[nr][nc] = true;
+            prev[nr][nc] = current;
+            queue.push({ r: nr, c: nc });
         }
     }
 
-    // Sự kiện bàn phím
-    window.addEventListener("keydown", (e) => {
-        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-            e.preventDefault();
-            moveWolf(e.key);
+    if (!visited[targetPos.r][targetPos.c]) {
+        alert("Không tìm thấy đường đi ngắn nhất tới Cừu.");
+        return;
+    }
+
+    let path = [];
+    let current = targetPos;
+    while (current) {
+        path.push(current);
+        current = prev[current.r][current.c];
+    }
+    path.reverse();
+
+    const cellElements = document.querySelectorAll('.play_table .cel');
+    cellElements.forEach(cell => {
+        if (cell.style.backgroundColor === '#bd945f' || cell.style.backgroundColor === 'yellow') {
+            cell.style.backgroundColor = '';
         }
     });
 
-    // Nút Reset
-    document.getElementById("resetBtn").addEventListener("click", () => {
-        location.reload();
-    });
-
-    // Nút Thoát
-    document.getElementById("backHomeBtn").addEventListener("click", () => {
-        if(confirm("Bạn có muốn thoát không?")) {
-            window.close();
+    path.forEach(pos => {
+        const index = pos.r * size + pos.c;
+        const cell = cellElements[index];
+        if (cell) {
+            cell.style.backgroundColor = '#bd945f';
         }
     });
 });
+
         </script>
     </body>
 </html>
