@@ -1,0 +1,10 @@
+Node  h(n)    Neighbors           L1 (sorted)         L
+---------------------------------------------------------------------------
+A     20      C15, D6, E7         D6, E7, C15         D6, E7, C15
+D     6       F10, I8             I8, F10             E7, I8, F10, C15
+I     8       B0, G5              B0, G5              B0, G5, E7, F10, C15
+B     0       TTKT-Dung-                              G5, E7, F10, C15
+
+Đường đi: A -> D -> I -> B
+
+Kết quả: Tìm thấy đích B
